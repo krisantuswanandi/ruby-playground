@@ -4,6 +4,8 @@ require 'thor'
 
 # Define a class that inherits from Thor
 class App < Thor
+  class_option :lang, aliases: ['l'], desc: 'Specify the language', default: 'EN'
+
   desc 'hello [NAME]', 'say hello to NAME'
   long_desc <<~LONGDESC
     `app hello` will print out a warm welcoming message to a person of your choosing.
@@ -25,18 +27,26 @@ class App < Thor
     \x5>
     \x5> HELLO JOHN DOE!!!
     \x5> FROM JANE DOE!!!
+
+    You can also specify the language of the greeting with --lang flag.
+
+    > $ app hello "John Doe" --from "Jane Doe" --lang "ID"
+    \x5>
+    \x5> Halo John Doe
+    \x5> Dari Jane Doe
   LONGDESC
 
   option :from, aliases: ['f'], desc: 'Specify the sender of the greeting', banner: 'NAME'
   option :yell, aliases: ['y'], type: :boolean, desc: 'All caps, with three exclamation marks (not two!!)'
 
   def hello(name)
+    lang = options[:lang]
     from = options[:from]
     yell = options[:yell]
 
     outputs = []
-    outputs << "Hello #{name}"
-    outputs << "From #{from}" if from
+    outputs << (lang == 'ID' ? "Halo #{name}" : "Hello #{name}")
+    outputs << (lang == 'ID' ? "Dari #{from}" : "From #{from}") if from
     outputs = outputs.map { |i| i.upcase + '!!!' } if yell
     puts outputs.join("\n")
   end
