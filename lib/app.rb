@@ -6,21 +6,43 @@ require 'thor'
 class App < Thor
   desc 'hello [NAME]', 'say hello to NAME'
   long_desc <<~LONGDESC
-    `app hello` will print out a message to a person of your choosing.
+    `app hello` will print out a warm welcoming message to a person of your choosing.
 
-    You can optionally specify a second parameter, which will print out a from message as well.
-
-    > $ app hello "John Doe" "Jane Doe"
+    > $ app hello "John Doe"
     \x5>
     \x5> Hello John Doe
-    \x5> from Jane Doe
+
+    You can optionally specify a who sends the message with --from flag, which will print out whom the message is from.
+
+    > $ app hello "John Doe" --from "Jane Doe"
+    \x5>
+    \x5> Hello John Doe
+    \x5> From Jane Doe
+
+    If you think it's not warm enough, you can make it stand out by using the --yell flag.
+
+    > $ app hello "John Doe" --from "Jane Doe" --yell
+    \x5>
+    \x5> HELLO JOHN DOE!!!
+    \x5> FROM JANE DOE!!!
   LONGDESC
-  def hello(name, from = nil)
-    puts "Hello #{name}"
-    puts "from #{from}" if from
+
+  option :from, aliases: ['f'], desc: 'Specify the sender of the greeting', banner: 'NAME'
+  option :yell, aliases: ['y'], type: :boolean, desc: 'All caps, with three exclamation marks (not two!!)'
+
+  def hello(name)
+    from = options[:from]
+    yell = options[:yell]
+
+    outputs = []
+    outputs << "Hello #{name}"
+    outputs << "From #{from}" if from
+    outputs = outputs.map { |i| i.upcase + '!!!' } if yell
+    puts outputs.join("\n")
   end
 
   desc 'version', 'print the version'
+
   def version
     puts '1.0.0'
   end
